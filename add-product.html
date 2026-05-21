@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enter Product — MaisonCraft</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f1eb;
+      --surface: #faf8f5;
+      --ink: #1a1410;
+      --ink-muted: #7a6f64;
+      --accent: #b85c2c;
+      --accent-light: #f0e8df;
+      --border: #e0d8ce;
+      --success: #3a7d56;
+      --success-light: #e8f2ec;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.5;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 3.5rem 4rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      animation: fadeDown 0.7s ease both;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.85rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .tagline {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover { color: var(--ink); }
+
+    .back-link svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.2s ease;
+    }
+
+    .back-link:hover svg { transform: translateX(-3px); }
+
+    /* ── Page intro ── */
+    .page-intro {
+      padding: 3.5rem 4rem 1.5rem;
+      animation: fadeDown 0.7s 0.1s ease both;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    .page-intro h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+
+    .page-intro h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .page-intro p {
+      margin-top: 0.9rem;
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.02em;
+      line-height: 1.65;
+      max-width: 480px;
+    }
+
+    /* ── Form wrapper ── */
+    .form-section {
+      padding: 2.5rem 4rem 5rem;
+      flex: 1;
+      animation: fadeUp 0.65s 0.2s ease both;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      max-width: 720px;
+    }
+
+    .form-card-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .form-card-header-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .form-card-header-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .form-body {
+      padding: 2rem 2rem 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem 2rem;
+    }
+
+    /* Full-width fields */
+    .field-full { grid-column: 1 / -1; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    label .required-dot {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 300;
+      padding: 0.75rem 1rem;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      border-radius: 0;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="url"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--ink);
+      background: var(--surface);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--border);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    /* Select arrow */
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-right: 1.5px solid var(--ink-muted);
+      border-bottom: 1.5px solid var(--ink-muted);
+      transform: translateY(-65%) rotate(45deg);
+      pointer-events: none;
+    }
+
+    select { cursor: pointer; padding-right: 2.5rem; }
+
+    /* Field hint */
+    .field-hint {
+      font-size: 0.7rem;
+      color: var(--ink-muted);
+      line-height: 1.4;
+      margin-top: -0.1rem;
+    }
+
+    /* ── Divider ── */
+    .form-divider {
+      grid-column: 1 / -1;
+      height: 1px;
+      background: var(--border);
+      margin: 0.25rem 0;
+    }
+
+    /* ── Submit row ── */
+    .form-actions {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .required-note {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+    }
+
+    .submit-btn {
+      background: var(--ink);
+      color: var(--surface);
+      border: none;
+      padding: 0.75rem 2.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      transition: background 0.22s ease, opacity 0.22s ease;
+      position: relative;
+      min-width: 160px;
+      justify-content: center;
+    }
+
+    .submit-btn:hover:not(:disabled) { background: var(--accent); }
+
+    .submit-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .submit-btn .btn-spinner {
+      width: 13px;
+      height: 13px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .submit-btn.loading .btn-text { opacity: 0.7; }
+    .submit-btn.loading .btn-spinner { display: block; }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(245, 241, 235, 0.92);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .success-overlay.visible {
+      display: flex;
+    }
+
+    .success-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 3rem 3.5rem;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .success-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--success-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+
+    .success-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--success);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .success-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+    }
+
+    .success-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .success-msg {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+      line-height: 1.65;
+    }
+
+    .success-countdown {
+      margin-top: 1.75rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .success-progress {
+      margin-top: 0.75rem;
+      height: 2px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .success-progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 100%;
+      transform-origin: left;
+      animation: shrink 3s linear forwards;
+    }
+
+    /* ── Error message ── */
+    .form-error {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 0.85rem 1rem;
+      background: #fdf0ea;
+      border: 1px solid #e8c4ad;
+      font-size: 0.78rem;
+      color: var(--accent);
+      line-height: 1.5;
+    }
+
+    .form-error.visible { display: block; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 2.5rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-note {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes shrink {
+      from { transform: scaleX(1); }
+      to   { transform: scaleX(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      header, .page-intro, .form-section, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+      header { align-items: flex-start; flex-direction: column; gap: 1.25rem; }
+      .form-body { grid-template-columns: 1fr; }
+      .field-full { grid-column: 1; }
+      .form-actions { flex-direction: column; align-items: flex-start; }
+      .submit-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-left">
+    <a href="index.html" class="logo">Maison<span>Craft</span></a>
+    <div class="tagline">Handcrafted · Thoughtfully Made</div>
+  </div>
+  <a href="index.html" class="back-link">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Back to Collection
+  </a>
+</header>
+
+<!-- ── Page intro ── -->
+<div class="page-intro">
+  <h1>Enter a <em>Product</em></h1>
+  <p>Add a new item to the MaisonCraft collection. Fill in the details below and it will appear in the shop once your Google Sheet is updated.</p>
+</div>
+
+<!-- ── Form section ── -->
+<div class="form-section">
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-header-dot"></div>
+      <div class="form-card-header-label">Product Details</div>
+    </div>
+
+    <div class="form-body" id="form-body">
+
+      <!-- Error message -->
+      <div class="form-error" id="form-error" role="alert"></div>
+
+      <!-- name -->
+      <div class="field field-full">
+        <label for="f-name">
+          Product Name <span class="required-dot" title="Required"></span>
+        </label>
+        <input type="text" id="f-name" name="name" placeholder="e.g. Hand-thrown Ceramic Mug" required />
+      </div>
+
+      <!-- category -->
+      <div class="field">
+        <label for="f-category">Category <span class="required-dot" title="Required"></span></label>
+        <input type="text" id="f-category" name="category" placeholder="e.g. Ceramics" required />
+      </div>
+
+      <!-- price -->
+      <div class="field">
+        <label for="f-price">Price <span class="required-dot" title="Required"></span></label>
+        <input type="number" id="f-price" name="price" placeholder="e.g. 48.00" step="0.01" min="0" required />
+        <span class="field-hint">Enter numeric value in USD — no $ symbol needed.</span>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- desc -->
+      <div class="field field-full">
+        <label for="f-desc">Description</label>
+        <textarea id="f-desc" name="desc" placeholder="A brief, evocative description of the product…"></textarea>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- img -->
+      <div class="field field-full">
+        <label for="f-img">Image URL</label>
+        <input type="url" id="f-img" name="img" placeholder="https://example.com/image.jpg" />
+        <span class="field-hint">Direct link to a product image. Leave blank to show a placeholder.</span>
+      </div>
+
+      <!-- badge -->
+      <div class="field">
+        <label for="f-badge">Badge Label</label>
+        <input type="text" id="f-badge" name="badge" placeholder="e.g. New Arrival" />
+        <span class="field-hint">Optional ribbon shown on the card (e.g. "Sale", "New").</span>
+      </div>
+
+    </div><!-- /.form-body -->
+
+    <div class="form-actions">
+      <span class="required-note">● Required fields</span>
+      <button class="submit-btn" id="submit-btn" type="button">
+        <span class="btn-spinner" aria-hidden="true"></span>
+        <span class="btn-text">Submit Product</span>
+      </button>
+    </div>
+  </div><!-- /.form-card -->
+</div>
+
+<!-- ── Success overlay ── -->
+<div class="success-overlay" id="success-overlay" role="status" aria-live="polite">
+  <div class="success-card">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <div class="success-title">Product <em>Submitted</em></div>
+    <p class="success-msg">Your product has been sent to the sheet and will appear in the collection shortly.</p>
+    <div class="success-countdown">Returning to collection…</div>
+    <div class="success-progress">
+      <div class="success-progress-bar" id="progress-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-note">© 2026 MaisonCraft</div>
+  <div class="footer-note">Free shipping on orders over $75</div>
+</footer>
+
+<script>
+  // ─── Replace this with your deployed Google Apps Script Web App URL ───
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxRioYq8lxTw87wXuMpLe8WoL1HWPzO-sKhd1Dng1z68KxTQa7yjw2K7MxEv-anqIlw0g/exec";
+
+  const submitBtn = document.getElementById('submit-btn');
+  const errorEl  = document.getElementById('form-error');
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.classList.add('visible');
+    errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function clearError() {
+    errorEl.textContent = '';
+    errorEl.classList.remove('visible');
+  }
+
+  function setLoading(on) {
+    submitBtn.disabled = on;
+    submitBtn.classList.toggle('loading', on);
+    submitBtn.querySelector('.btn-text').textContent = on ? 'Submitting…' : 'Submit Product';
+  }
+
+  function showSuccess() {
+    const overlay = document.getElementById('success-overlay');
+    overlay.classList.add('visible');
+    // Restart the progress bar animation
+    const bar = document.getElementById('progress-bar');
+    bar.style.animation = 'none';
+    void bar.offsetWidth; // reflow
+    bar.style.animation = '';
+    setTimeout(() => { window.location.href = 'index.html'; }, 3200);
+  }
+
+  function getFormData() {
+    return {
+      name:     document.getElementById('f-name').value.trim(),
+      category: document.getElementById('f-category').value.trim(),
+      price:    document.getElementById('f-price').value.trim(),
+      desc:     document.getElementById('f-desc').value.trim(),
+      img:      document.getElementById('f-img').value.trim(),
+      badge:    document.getElementById('f-badge').value.trim(),
+    };
+  }
+
+  function validate(data) {
+    if (!data.name)     return 'Product name is required.';
+    if (!data.category) return 'Category is required.';
+    if (!data.price || isNaN(parseFloat(data.price))) return 'A valid price is required.';
+    return null;
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    clearError();
+    const data = getFormData();
+    const err  = validate(data);
+    if (err) { showError(err); return; }
+
+    if (WEB_APP_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+      showError('Web App URL not configured. Open add-product.html and set the WEB_APP_URL constant to your Google Apps Script deployment URL.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Build URL with query parameters matching Google Sheet column names
+      const url = new URL(WEB_APP_URL);
+      Object.entries(data).forEach(([k, v]) => { if (v !== '') url.searchParams.append(k, v); });
+
+      const res = await fetch(url.toString(), { method: 'GET' });
+
+      if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
+
+      showSuccess();
+    } catch (e) {
+      console.error('Submission error:', e);
+      showError('Submission failed — ' + e.message + '. Please check your Web App URL and try again.');
+    } finally {
+      setLoading(false);
+    }
+  });
+</script>
+</body>
+</html>
